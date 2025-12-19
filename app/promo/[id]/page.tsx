@@ -1,6 +1,11 @@
 // app/promo/[id]/page.tsx
 import { notFound } from 'next/navigation';
+import type { Metadata } from "next";
 import PromoDetail from '@/components/promo/PromoDetail';
+
+const baseUrl = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL 
+  ? process.env.NEXT_PUBLIC_BASE_URL 
+  : 'https://lrt-sumsel.com';
 
 // Data dummy untuk promo dan event
 const promoData = [
@@ -37,6 +42,47 @@ interface PromoDetailPageProps {
   };
 }
 
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const promo = promoData.find(item => item.id === params.id);
+
+  if (!promo) {
+    return {
+      title: 'Promo Tidak Ditemukan',
+    };
+  }
+
+  const cleanTitle = promo.title.replace(/[🚆🌿🍩✨🍪]/g, '').trim();
+  const description = promo.description.substring(0, 160) || 
+    `Dapatkan promo spesial ${cleanTitle} dari LRT Sumatera Selatan. Penawaran terbatas untuk pengguna LRT Palembang.`;
+
+  return {
+    title: `${cleanTitle} - Promo LRT Sumatera Selatan`,
+    description: description,
+    keywords: ['promo LRT', 'diskon LRT', promo.title, 'promo LRT Palembang', 'penawaran LRT', ...promo.hashtags],
+    alternates: {
+      canonical: `${baseUrl}/promo/${params.id}`,
+    },
+    openGraph: {
+      title: `${cleanTitle} - Promo LRT Sumatera Selatan`,
+      description: description,
+      url: `${baseUrl}/promo/${params.id}`,
+      type: 'article',
+      images: promo.images.map(img => ({
+        url: img,
+        width: 1200,
+        height: 630,
+        alt: cleanTitle,
+      })),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${cleanTitle} - Promo LRT Sumatera Selatan`,
+      description: description,
+      images: promo.images,
+    },
+  };
+}
+
 export default function PromoDetailPage({ params }: PromoDetailPageProps) {
   const { id } = params;
   const promo = promoData.find(item => item.id === id);
@@ -44,16 +90,65 @@ export default function PromoDetailPage({ params }: PromoDetailPageProps) {
     notFound();
   }
 
+  const cleanTitle = promo.title.replace(/[🚆🌿🍩✨🍪]/g, '').trim();
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Beranda',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Promo & Event',
+        item: `${baseUrl}/promo`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: cleanTitle,
+        item: `${baseUrl}/promo/${id}`,
+      },
+    ],
+  };
+
+  const offerSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Offer',
+    name: cleanTitle,
+    description: promo.description.substring(0, 200),
+    seller: {
+      '@type': 'Organization',
+      name: 'LRT Sumatera Selatan',
+    },
+    category: 'Transportation',
+    image: promo.images.map(img => `${baseUrl}${img}`),
+  };
+
   return (
-    <main className="pt-24 pb-16">
-      <div className="container mx-auto px-4">
-        <PromoDetail
-          title={promo.title}
-          description={promo.description}
-          images={promo.images}
-          hashtags={promo.hashtags}
-        />
-      </div>
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(offerSchema) }}
+      />
+      <main className="pt-24 pb-16">
+        <div className="container mx-auto px-4">
+          <PromoDetail
+            title={promo.title}
+            description={promo.description}
+            images={promo.images}
+            hashtags={promo.hashtags}
+          />
+        </div>
+      </main>
+    </>
   );
 }

@@ -1,11 +1,69 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import ScheduleHeader from "@/components/jadwal-keberangkatan/ScheduleHeader";
 import TableFromBandara from "@/components/jadwal-keberangkatan/TableFromBandara";
 import TableFromDjka from "@/components/jadwal-keberangkatan/TableFromDJKA";
 
+const baseUrl = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL 
+  ? process.env.NEXT_PUBLIC_BASE_URL 
+  : 'https://lrt-sumsel.com';
+
+export const metadata: Metadata = {
+  title: 'Jadwal Keberangkatan LRT Sumatera Selatan - Bandara ke DJKA',
+  description: 'Jadwal lengkap keberangkatan LRT Sumatera Selatan dari Bandara ke DJKA dan sebaliknya. Informasi waktu keberangkatan, frekuensi, dan jadwal terbaru LRT Palembang.',
+  keywords: ['jadwal LRT', 'jadwal LRT Palembang', 'jadwal keberangkatan LRT', 'jadwal LRT Bandara DJKA', 'waktu keberangkatan LRT', 'jadwal LRT Sumatera Selatan'],
+  alternates: {
+    canonical: `${baseUrl}/jadwal-keberangkatan`,
+  },
+  openGraph: {
+    title: 'Jadwal Keberangkatan LRT Sumatera Selatan - Bandara ke DJKA',
+    description: 'Jadwal lengkap keberangkatan LRT Sumatera Selatan dari Bandara ke DJKA dan sebaliknya. Informasi waktu keberangkatan terbaru.',
+    url: `${baseUrl}/jadwal-keberangkatan`,
+    images: ['/images/jadwal-bandara-djka.png'],
+  },
+};
+
 export default function JadwalPage() {
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Beranda',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Jadwal Keberangkatan',
+        item: `${baseUrl}/jadwal-keberangkatan`,
+      },
+    ],
+  };
+
+  const scheduleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Schedule',
+    name: 'Jadwal Keberangkatan LRT Sumatera Selatan',
+    description: 'Jadwal keberangkatan LRT dari Bandara ke DJKA dan sebaliknya',
+    provider: {
+      '@type': 'Organization',
+      name: 'LRT Sumatera Selatan',
+    },
+  };
   return (
-    <main className="pt-24 pb-16">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(scheduleSchema) }}
+      />
+      <main className="pt-24 pb-16">
       <div className="container mx-auto px-4">
         {/* Header, Info, dan Card Arah */}
         <ScheduleHeader />
@@ -60,5 +118,6 @@ export default function JadwalPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

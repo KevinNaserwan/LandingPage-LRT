@@ -1,5 +1,11 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import ArtikelDetail from "@/components/artikel/ArticleDetail";
+
+const baseUrl =
+  typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL
+    ? process.env.NEXT_PUBLIC_BASE_URL
+    : "https://lrt-sumsel.com";
 
 // Data dummy untuk artikel
 const artikelData = [
@@ -75,8 +81,8 @@ const artikelData = [
           "Tidak hanya ditujukan bagi warga lokal, promo ini juga bisa dinikmati oleh wisatawan yang tengah berkunjung ke Palembang dan ingin menjelajahi kota dengan lebih efisien. LRT Sumsel terus berkomitmen untuk menjadi solusi transportasi masa depan yang praktis dan berkelanjutan.",
           "Segera manfaatkan promo akhir tahun ini dan nikmati diskon tiket LRT hingga 50% selama bulan Desember! Unduh aplikasi resmi LRT Sumsel sekarang, rencanakan perjalanan Anda, dan rasakan pengalaman transportasi publik yang cepat, hemat, dan ramah lingkungan.",
         ],
-      }
-    ]
+      },
+    ],
   },
   {
     id: "4",
@@ -93,10 +99,66 @@ const artikelData = [
           "Kebersihan menjadi perhatian utama, terutama di masa pascapandemi di mana standar kebersihan publik semakin tinggi. Selain itu, sistem kelistrikan yang menjadi tulang punggung operasional LRT juga terus dimonitor untuk mencegah gangguan teknis yang dapat menghambat perjalanan. Tak kalah penting, performa kereta dicek secara detail agar setiap perjalanan terasa nyaman, tenang, dan tepat waktu bagi para penumpang.",
           "Dengan adanya perawatan rutin ini, LRT Palembang berupaya menjaga kepercayaan masyarakat terhadap layanan transportasi modern yang ramah lingkungan ini. Upaya ini juga menunjukkan bahwa keamanan dan kenyamanan penumpang tetap menjadi prioritas utama dalam setiap aspek operasional.",
         ],
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const artikel = artikelData.find((item) => item.id === params.id);
+
+  if (!artikel) {
+    return {
+      title: "Artikel Tidak Ditemukan",
+    };
+  }
+
+  const cleanTitle = artikel.title.replace(/[🚆🌿🍩✨🍪]/g, "").trim();
+  const description =
+    artikel.content[0]?.paragraphs?.[0]?.substring(0, 160) ||
+    `Baca artikel lengkap tentang ${cleanTitle} dari LRT Sumatera Selatan. Informasi terbaru tentang transportasi publik di Palembang.`;
+
+  return {
+    title: cleanTitle,
+    description: description,
+    keywords: [
+      "LRT Sumatera Selatan",
+      "LRT Palembang",
+      "artikel LRT",
+      "transportasi publik",
+      "berita LRT",
+      cleanTitle,
+    ],
+    alternates: {
+      canonical: `${baseUrl}/artikel/${params.id}`,
+    },
+    openGraph: {
+      title: cleanTitle,
+      description: description,
+      url: `${baseUrl}/artikel/${params.id}`,
+      type: "article",
+      publishedTime: artikel.date,
+      images: [
+        {
+          url: artikel.imagePath,
+          width: 1200,
+          height: 630,
+          alt: cleanTitle,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: cleanTitle,
+      description: description,
+      images: [artikel.imagePath],
+    },
+  };
+}
 
 export default function Page({ params }: { params: { id: string } }) {
   const artikel = artikelData.find((item) => item.id === params.id);
@@ -105,18 +167,48 @@ export default function Page({ params }: { params: { id: string } }) {
     notFound();
   }
 
+  const cleanTitle = artikel.title.replace(/[🚆🌿🍩✨🍪]/g, "").trim();
+  const firstParagraph = artikel.content[0]?.paragraphs?.[0];
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: cleanTitle,
+    image: `${baseUrl}${artikel.imagePath}`,
+    datePublished: artikel.date,
+    dateModified: artikel.date,
+    author: {
+      "@type": "Organization",
+      name: "LRT Sumatera Selatan",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "LRT Sumatera Selatan",
+      logo: {
+        "@type": "ImageObject",
+        url: `${baseUrl}/images/logo-lrt.png`,
+      },
+    },
+    description: firstParagraph ? firstParagraph.substring(0, 160) : "",
+  };
+
   return (
-    <main className="pt-24 pb-16">
-      <div className="container mx-auto px-4">
-        <ArtikelDetail
-          title={artikel.title}
-          date={artikel.date} 
-          imagePath={artikel.imagePath}
-          content={artikel.content}
-          likes={artikel.likes}
-          shares={artikel.shares}
-        />
-      </div>
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <main className="pt-24 pb-16">
+        <div className="container mx-auto px-4">
+          <ArtikelDetail
+            title={artikel.title}
+            date={artikel.date}
+            imagePath={artikel.imagePath}
+            content={artikel.content}
+            likes={artikel.likes}
+            shares={artikel.shares}
+          />
+        </div>
+      </main>
+    </>
   );
 }
