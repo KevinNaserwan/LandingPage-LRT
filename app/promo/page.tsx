@@ -4,7 +4,7 @@ import EventGrid from "@/components/promo/EventGrid";
 
 const baseUrl = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL 
   ? process.env.NEXT_PUBLIC_BASE_URL 
-  : 'https://lrt-sumsel.com';
+  : 'https://lrt-sumsel.id';
 
 export const metadata: Metadata = {
   title: 'Promo & Event LRT Sumatera Selatan - Diskon & Penawaran Spesial',

@@ -3,7 +3,7 @@ import RouteInfo from "@/components/informasi-rute/RouteInfo";
 
 const baseUrl = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL 
   ? process.env.NEXT_PUBLIC_BASE_URL 
-  : 'https://lrt-sumsel.com';
+  : 'https://lrt-sumsel.id';
 
 export const metadata: Metadata = {
   title: 'Informasi Rute LRT Sumatera Selatan - Peta & Stasiun',

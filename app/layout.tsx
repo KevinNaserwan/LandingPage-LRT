@@ -36,7 +36,7 @@ const poppins = Poppins({
 
 const baseUrl = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL 
   ? process.env.NEXT_PUBLIC_BASE_URL 
-  : 'https://lrt-sumsel.com';
+  : 'https://lrt-sumsel.id';
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -106,9 +106,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className={`${sfPro.variable} ${poppins.variable}`}>
-      <head>
-        <link rel="icon" href="/images/logo-lrt.png" type="image/png" />
-      </head>
       <body className="sfPro">
         <Navbar />
         <main>

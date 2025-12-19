@@ -10,7 +10,7 @@ import FAQSection from "@/components/home/FAQSection";
 const baseUrl =
   typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL
     ? process.env.NEXT_PUBLIC_BASE_URL
-    : "https://lrt-sumsel.com";
+    : "https://lrt-sumsel.id";
 
 export const metadata: Metadata = {
   title: "LRT Sumatera Selatan - Transportasi Publik Modern & Ramah Lingkungan",

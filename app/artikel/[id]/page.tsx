@@ -5,7 +5,7 @@ import ArtikelDetail from "@/components/artikel/ArticleDetail";
 const baseUrl =
   typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_URL
     ? process.env.NEXT_PUBLIC_BASE_URL
-    : "https://lrt-sumsel.com";
+    : "https://lrt-sumsel.id";
 
 // Data dummy untuk artikel
 const artikelData = [

@@ -6,7 +6,7 @@ import RelatedArticles from "@/components/pembelian-tiket/RelatedArticles";
 
 const baseUrl = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_BASE_URL 
   ? process.env.NEXT_PUBLIC_BASE_URL 
-  : 'https://lrt-sumsel.com';
+  : 'https://lrt-sumsel.id';
 
 export const metadata: Metadata = {
   title: 'Pembelian Tiket LRT Sumatera Selatan - Panduan Lengkap',
